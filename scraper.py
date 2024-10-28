@@ -171,9 +171,10 @@ def extract_subdomain(url):
 
 def process_subdomain(url):
     subdomain = extract_subdomain(url)
-    if subdomain not in subdomain_pages:
-        subdomain_pages[subdomain] = set()
-    subdomain_pages[subdomain].add(url)
+    if subdomain: # add if subdomain is not None
+        if subdomain not in subdomain_pages:
+            subdomain_pages[subdomain] = set()
+        subdomain_pages[subdomain].add(url)
 
 
 def save_longest_page():
@@ -183,13 +184,14 @@ def save_longest_page():
 def save_subdomain_info():
     with open('subdomains.txt', 'w') as file:
         for subdomain, urls in sorted(subdomain_pages.items()):
-            example_url = next(iter(urls))
-            parsed_url = urlparse(example_url)
-            scheme = parsed_url.scheme
-            netloc = parsed_url.netloc
+            if urls:
+                example_url = next(iter(urls))
+                parsed_url = urlparse(example_url)
+                scheme = parsed_url.scheme
+                netloc = parsed_url.netloc
 
-            formatted_subdomain = f"{scheme}://{netloc}"
-            file.write(f"{formatted_subdomain}, {len(urls)}\n")
+                formatted_subdomain = f"{scheme}://{netloc}"
+                file.write(f"{formatted_subdomain}, {len(urls)}\n")
 
 
 def normalize_url(url):
