@@ -1,5 +1,3 @@
-## COPIED CODE
-
 import re
 from collections import Counter
 from urllib.parse import urlparse, urljoin
@@ -9,7 +7,10 @@ import hashlib
 EXCLUDED_EXTENSIONS = [
     '.css', '.js', '.bmp', '.gif', '.jpe', '.jpeg', '.jpg', '.ico', '.png', '.tif', '.tiff', '.pdf',
     '.mp3', '.mp4', '.avi', '.mov', '.mpeg', '.tar', '.gz', '.zip', '.rar', '.swf', '.flv', '.wma',
-    '.wmv', '.mid', '.bam', '.ppt'
+    '.wmv', '.mid', '.bam', '.ppt', '.wav', '.ram', '.m4v', '.mkv', '.ogg', '.ogv', '.ps', '.eps',
+    '.tex', '.pptx', '.doc', '.docx', '.xls', '.xlsx', '.names', '.data', '.dat', '.exe', '.bz2',
+    '.msi', '.bin', '.7z', '.psd', '.dmg', '.iso', '.epub', '.dll', '.cnf', '.tgz', '.sha1',
+    '.thmx', '.mso', '.arff', '.rtf', '.jar', '.csv', '.rm', '.smil'
 ]
 
 STOP_WORDS = {
@@ -110,16 +111,29 @@ def is_valid(url):
     try:
         parsed = urlparse(url)
         url = parsed._replace(fragment="").geturl()
+        
+        # Check for valid scheme
         if parsed.scheme not in set(["http", "https"]):
             return False
-        if not re.match(
-            r".*\.(ics|cs|informatics|stat)\.uci\.edu.*", parsed.netloc):
+        
+        # Check if the URL belongs to allowed domains and paths
+        if re.match(r"(.*\.)?(ics|cs|informatics|stat)\.uci\.edu$", parsed.netloc):
+            pass
+        elif parsed.netloc == "today.uci.edu" and parsed.path.startswith("/department/information_computer_sciences"):
+            pass
+        else:
             return False
+        
+        # Exclude URLs with undesired file extensions
         if any(parsed.path.lower().endswith(ext) for ext in EXCLUDED_EXTENSIONS):
-            return False  
-        # Remove URL fragments
-        url = parsed._replace(fragment="").geturl()
-        return True
+            return False
+        
+        return True  
+        
+        # # Remove URL fragments
+        # url = parsed._replace(fragment="").geturl()
+        # return True
+    
     except TypeError:
         print("TypeError for URL:", url)
         raise
@@ -391,8 +405,14 @@ def save_unique_pages():
 #     # There are already some conditions that return False.
 #     try:
 #         parsed = urlparse(url)
+#         url = parsed._replace(fragment="").geturl()
 #         if parsed.scheme not in set(["http", "https"]):
 #             return False
+        
+        if re.match(r".*\.(ics|cs|informatics|stat)\.uci\.edu$", parsed.netloc):
+            pass
+        elif parsed.netloc == "today.uci.edu" and parsed.path.startswith("/department/information_computer_sciences"):
+            pass
 #         return not re.match(
 #             r".*\.(css|js|bmp|gif|jpe?g|ico"
 #             + r"|png|tiff?|mid|mp2|mp3|mp4"
@@ -402,7 +422,7 @@ def save_unique_pages():
 #             + r"|epub|dll|cnf|tgz|sha1"
 #             + r"|thmx|mso|arff|rtf|jar|csv"
 #             + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower())
-
+        
 #     except TypeError:
 #         print ("TypeError for ", parsed)
 #         raise
