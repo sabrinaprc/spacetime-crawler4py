@@ -93,6 +93,7 @@ def extract_next_links(url, resp):
     for link in soup.find_all('a', href = True):
         # Resolve relative links into absolute URLs
         absolute_link = urljoin(resp.raw_response.url, link['href'])
+        # Removes fragments
         absolute_link = urlparse(absolute_link)._replace(fragment="").geturl()
         if is_valid(absolute_link): 
             links.append(absolute_link)
@@ -129,10 +130,6 @@ def is_valid(url):
             return False
         
         return True  
-        
-        # # Remove URL fragments
-        # url = parsed._replace(fragment="").geturl()
-        # return True
     
     except TypeError:
         print("TypeError for URL:", url)
@@ -409,10 +406,10 @@ def save_unique_pages():
 #         if parsed.scheme not in set(["http", "https"]):
 #             return False
         
-        if re.match(r".*\.(ics|cs|informatics|stat)\.uci\.edu$", parsed.netloc):
-            pass
-        elif parsed.netloc == "today.uci.edu" and parsed.path.startswith("/department/information_computer_sciences"):
-            pass
+        # if re.match(r".*\.(ics|cs|informatics|stat)\.uci\.edu$", parsed.netloc):
+        #     pass
+        # elif parsed.netloc == "today.uci.edu" and parsed.path.startswith("/department/information_computer_sciences"):
+        #     pass
 #         return not re.match(
 #             r".*\.(css|js|bmp|gif|jpe?g|ico"
 #             + r"|png|tiff?|mid|mp2|mp3|mp4"
